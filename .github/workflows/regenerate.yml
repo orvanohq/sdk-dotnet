@@ -1,7 +1,8 @@
 # Spec 0014 RGN-6 to RGN-9: moves orvano-contract.json to a new orvano commit, regenerates, and opens or updates the
 # one regenerate PR from bot/contract-regenerate as the orvano-sdk-bot App, so the PR runs the full CI (RGN-4, RGN-7).
 # Triggers: orvano's image workflow dispatches contract-updated once the sha-<commit> image is signed (RGN-5); you can
-# run it by hand with a commit; a daily catch up covers a lost dispatch (RGN-9). Nothing here merges the PR.
+# run it by hand with a commit, or with none to run the catch up now; a daily catch up covers a lost dispatch (RGN-9).
+# Nothing here merges the PR.
 name: Regenerate
 
 on:
@@ -10,8 +11,8 @@ on:
   workflow_dispatch:
     inputs:
       commit:
-        description: The orvano commit to regenerate from (40 lowercase hex).
-        required: true
+        description: The orvano commit (40 lowercase hex). Leave it empty to run the daily catch up now.
+        required: false
         type: string
   schedule:
     - cron: "23 5 * * *"
@@ -50,27 +51,28 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           pin="$(jq -r .commit orvano-contract.json)"
+          commit=""
           case "$EVENT" in
             repository_dispatch) commit="$DISPATCH_COMMIT" ;;
             workflow_dispatch) commit="$INPUT_COMMIT" ;;
-            schedule)
-              commit=""
-              for sha in $(gh api "repos/orvanohq/orvano/commits?sha=main&path=api&per_page=30" --jq '.[].sha'); do
-                if docker buildx imagetools inspect "$IMAGE:sha-$sha" > /dev/null 2>&1; then
-                  commit="$sha"
-                  break
-                fi
-              done
-              if [ -z "$commit" ]; then
-                echo "No recent api/ commit on orvano main has an image yet."
-                exit 0
-              fi
-              if [ "$(gh api "repos/orvanohq/orvano/compare/$pin...$commit" --jq .status)" != "ahead" ]; then
-                echo "The pin $pin is not older than $commit; nothing to catch up."
-                exit 0
-              fi
-              ;;
           esac
+          # RGN-9: the daily catch up, and a manual run with no commit, which runs the same check.
+          if [ -z "$commit" ] && [ "$EVENT" != "repository_dispatch" ]; then
+            for sha in $(gh api "repos/orvanohq/orvano/commits?sha=main&path=api&per_page=30" --jq '.[].sha'); do
+              if docker buildx imagetools inspect "$IMAGE:sha-$sha" > /dev/null 2>&1; then
+                commit="$sha"
+                break
+              fi
+            done
+            if [ -z "$commit" ]; then
+              echo "No recent api/ commit on orvano main has an image yet."
+              exit 0
+            fi
+            if [ "$(gh api "repos/orvanohq/orvano/compare/$pin...$commit" --jq .status)" != "ahead" ]; then
+              echo "The pin $pin is not older than $commit; nothing to catch up."
+              exit 0
+            fi
+          fi
           if ! [[ "$commit" =~ ^[0-9a-f]{40}$ ]]; then
             echo "::error::The commit must be 40 lowercase hex characters."
             exit 1
