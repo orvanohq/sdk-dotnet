@@ -63,8 +63,8 @@ jobs:
           test -z "$(git status --porcelain)"
 
   # Spec 0014 CNF-5, CNF-6, spec 0002 LIB-12: every server scenario against Orvano and the stub from
-  # api/conformance/compose.yaml at the pinned commit. The server image is built from that commit here, because
-  # nothing publishes ghcr.io/orvanohq/orvano:sha-<commit> yet; switch to pulling it then.
+  # api/conformance/compose.yaml at the pinned commit, using the published ghcr.io/orvanohq/orvano:sha-<pinned commit>
+  # image.
   conformance:
     name: conformance
     runs-on: ubuntu-24.04
@@ -94,21 +94,17 @@ jobs:
           restore-keys: nuget-${{ runner.os }}-
       - name: Fetch the pinned orvano commit
         run: tool/regenerate.sh --fetch-only
-      - name: Build the Orvano image at the pinned commit
-        run: docker build --file .orvano/deploy/Dockerfile --tag orvano:pinned .orvano
       - name: Start Orvano, PostgreSQL, and the stub
-        env:
-          ORVANO_IMAGE: orvano
-          ORVANO_IMAGE_TAG: pinned
-        run: docker compose --file .orvano/api/conformance/compose.yaml up --detach --wait
+        run: |
+          ORVANO_IMAGE_TAG="sha-$(jq -r .commit orvano-contract.json)"
+          export ORVANO_IMAGE_TAG
+          echo "ORVANO_IMAGE_TAG=$ORVANO_IMAGE_TAG" >> "$GITHUB_ENV"
+          docker compose --file .orvano/api/conformance/compose.yaml up --detach --wait
       - run: dotnet restore --locked-mode
       - name: Conformance
         run: dotnet run --project tests/Orvano.Server.ConformanceTests --configuration Release --no-restore -p:CI=true
       - name: Server logs
         if: failure()
-        env:
-          ORVANO_IMAGE: orvano
-          ORVANO_IMAGE_TAG: pinned
         run: docker compose --file .orvano/api/conformance/compose.yaml logs --no-color
 
   ci-gate:

@@ -1,0 +1,146 @@
+# Spec 0014 RGN-6 to RGN-9: moves orvano-contract.json to a new orvano commit, regenerates, and opens or updates the
+# one regenerate PR from bot/contract-regenerate as the orvano-sdk-bot App, so the PR runs the full CI (RGN-4, RGN-7).
+# Triggers: orvano's image workflow dispatches contract-updated once the sha-<commit> image is signed (RGN-5); you can
+# run it by hand with a commit; a daily catch up covers a lost dispatch (RGN-9). Nothing here merges the PR.
+name: Regenerate
+
+on:
+  repository_dispatch:
+    types: [contract-updated]
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: The orvano commit to regenerate from (40 lowercase hex).
+        required: true
+        type: string
+  schedule:
+    - cron: "23 5 * * *"
+
+permissions: {}
+
+# RGN-6: a newer run replaces an older one for this repo, whatever triggered it.
+concurrency:
+  group: regenerate
+  cancel-in-progress: true
+
+env:
+  BRANCH: bot/contract-regenerate
+  IMAGE: ghcr.io/orvanohq/orvano
+
+jobs:
+  regenerate:
+    name: regenerate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: false
+      # The commit arrives through env:, never inline, and anything that isn't 40 lowercase hex is refused (RGN-6).
+      # The catch up reads orvano's public history with this run's read only token (RGN-9).
+      - id: commit
+        name: Pick the orvano commit
+        env:
+          EVENT: ${{ github.event_name }}
+          DISPATCH_COMMIT: ${{ github.event.client_payload.commit }}
+          INPUT_COMMIT: ${{ inputs.commit }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          pin="$(jq -r .commit orvano-contract.json)"
+          case "$EVENT" in
+            repository_dispatch) commit="$DISPATCH_COMMIT" ;;
+            workflow_dispatch) commit="$INPUT_COMMIT" ;;
+            schedule)
+              commit=""
+              for sha in $(gh api "repos/orvanohq/orvano/commits?sha=main&path=api&per_page=30" --jq '.[].sha'); do
+                if docker buildx imagetools inspect "$IMAGE:sha-$sha" > /dev/null 2>&1; then
+                  commit="$sha"
+                  break
+                fi
+              done
+              if [ -z "$commit" ]; then
+                echo "No recent api/ commit on orvano main has an image yet."
+                exit 0
+              fi
+              if [ "$(gh api "repos/orvanohq/orvano/compare/$pin...$commit" --jq .status)" != "ahead" ]; then
+                echo "The pin $pin is not older than $commit; nothing to catch up."
+                exit 0
+              fi
+              ;;
+          esac
+          if ! [[ "$commit" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::The commit must be 40 lowercase hex characters."
+            exit 1
+          fi
+          if ! docker buildx imagetools inspect "$IMAGE:sha-$commit" > /dev/null; then
+            echo "::error::$IMAGE:sha-$commit does not exist, so conformance could not run against it."
+            exit 1
+          fi
+          echo "commit=$commit" >> "$GITHUB_OUTPUT"
+      # The generator is Node, so this job needs Node 24 and pnpm too (RGN-2), set up like ci.yml's drift job.
+      - if: steps.commit.outputs.commit != ''
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+      - if: steps.commit.outputs.commit != ''
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24.22.0
+      - if: steps.commit.outputs.commit != ''
+        name: Enable pnpm through corepack (the orvano checkout pins its version)
+        run: corepack enable
+      - id: changes
+        if: steps.commit.outputs.commit != ''
+        name: Move the pin and regenerate (RGN-2)
+        env:
+          COMMIT: ${{ steps.commit.outputs.commit }}
+          COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
+        run: |
+          tool/regenerate.sh --pin "$COMMIT"
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Already generated from $COMMIT."
+          fi
+      # RGN-4: the token reaches only this repo, and the branch ruleset still makes the App go through a PR.
+      - id: token
+        if: steps.changes.outputs.changed == 'true'
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          app-id: ${{ secrets.SDK_BOT_APP_ID }}
+          private-key: ${{ secrets.SDK_BOT_PRIVATE_KEY }}
+          owner: orvanohq
+          repositories: ${{ github.event.repository.name }}
+          permission-contents: write
+          permission-pull-requests: write
+      # RGN-6, RGN-8: one signed off commit on top of main, force pushed, and at most one open PR, updated in place.
+      - if: steps.changes.outputs.changed == 'true'
+        name: Commit, push, and open or update the PR
+        env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+          APP_SLUG: ${{ steps.token.outputs.app-slug }}
+          COMMIT: ${{ steps.commit.outputs.commit }}
+          REPO: ${{ github.repository }}
+        run: |
+          user_id="$(gh api "users/$APP_SLUG%5Bbot%5D" --jq .id)"
+          git config user.name "${APP_SLUG}[bot]"
+          git config user.email "$user_id+${APP_SLUG}[bot]@users.noreply.github.com"
+          short="${COMMIT:0:7}"
+          title="chore(sdk): regenerate from contract $short"
+          git switch -C "$BRANCH"
+          git add --all
+          git commit --quiet --signoff --message "$title" \
+            --message "Moves orvano-contract.json to orvanohq/orvano@$COMMIT and regenerates (spec 0014 RGN-6)."
+          git push --force "https://x-access-token:$GH_TOKEN@github.com/$REPO.git" "HEAD:refs/heads/$BRANCH"
+          body="$(printf '%s\n\n%s\n' \
+            "Regenerated from [orvanohq/orvano@$short](https://github.com/orvanohq/orvano/commit/$COMMIT) by the regenerate workflow (spec 0014 RGN-6)." \
+            "Review it and squash merge it by hand once CI, including conformance, is green (RGN-7).")"
+          number="$(gh pr list --repo "$REPO" --head "$BRANCH" --state open --json number --jq '.[0].number // empty')"
+          if [ -n "$number" ]; then
+            gh pr edit "$number" --repo "$REPO" --title "$title" --body "$body"
+          else
+            gh pr create --repo "$REPO" --base main --head "$BRANCH" --title "$title" --body "$body"
+          fi
