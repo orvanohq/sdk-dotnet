@@ -112,7 +112,8 @@ internal sealed class OrvanoTransport
                     byte[] body = await response.Content.ReadAsByteArrayAsync(linked.Token).ConfigureAwait(false);
                     if (_logger.IsEnabled(LogLevel.Debug))
                     {
-                        Log.Call(_logger, call.Method.Method, uri.AbsolutePath, status, _timeProvider.GetElapsedTime(started).TotalMilliseconds);
+                        TimeSpan elapsed = _timeProvider.GetElapsedTime(started);
+                        Log.Call(_logger, call.Method.Method, uri.AbsolutePath, status, elapsed.TotalMilliseconds);
                     }
                     if (status is >= 200 and < 300)
                     {
