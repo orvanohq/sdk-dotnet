@@ -1,0 +1,23 @@
+# Spec 0008 FMT-2: typos skips what Oxfmt and Oxlint skip (tooling/config/ignore-patterns.ts), plus the lockfiles'
+# hashes. Add a real word the checker doesn't know under [default.extend-words].
+[files]
+extend-exclude = [
+  "pnpm-lock.yaml",
+  "packages.lock.json",
+  "console/src/routeTree.gen.ts",
+  "schema.gen.ts",
+  "console/src/locales/",
+  "dist/",
+  "bin/",
+  "obj/",
+  ".vitest/",
+  ".tanstack/",
+  "coverage/",
+  "docs/.agent-cache/",
+  "tooling/starters/",
+  ".claude/skills/",
+  ".agents/skills/",
+  "skills-lock.json",
+]
+
+[default.extend-words]

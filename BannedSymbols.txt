@@ -1,0 +1,10 @@
+P:System.DateTime.Now; GEN-9: inject TimeProvider and call GetUtcNow()
+P:System.DateTime.UtcNow; GEN-9: inject TimeProvider and call GetUtcNow()
+P:System.DateTimeOffset.Now; GEN-9: inject TimeProvider and call GetUtcNow()
+P:System.DateTimeOffset.UtcNow; GEN-9: inject TimeProvider and call GetUtcNow()
+M:System.Threading.Tasks.Task.Wait; ASY-1: await the task
+P:System.Threading.Tasks.Task`1.Result; ASY-1: await the task
+M:System.Runtime.CompilerServices.TaskAwaiter.GetResult; ASY-1: await the task
+M:System.Runtime.CompilerServices.TaskAwaiter`1.GetResult; ASY-1: await the task
+N:Newtonsoft.Json; JSN-1: use System.Text.Json with the source generated context
+T:System.Random; TOK-1, KEY-1: use RandomNumberGenerator for anything secret or unguessable

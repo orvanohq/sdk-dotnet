@@ -1,0 +1,41 @@
+# Spec 0008 KIT-1: an SDK repo's CI, built from the core repo's reusable workflows.
+# export-template.mjs fills in the language and pins a full commit SHA of orvanohq/orvano main (spec 0010 TPL-3).
+# Move the pin forward with the core, and keep the date comment current.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  hygiene:
+    uses: orvanohq/orvano/.github/workflows/repo-hygiene.yml@cb12f1df33e00f892de7040a05e3ab17cf9410d4 # main as of 2026-10-18
+    permissions:
+      contents: read
+      pull-requests: read # the dco job reads the PR's commits (spec 0010 DCO-1)
+
+  sdk:
+    uses: orvanohq/orvano/.github/workflows/sdk-dotnet.yml@cb12f1df33e00f892de7040a05e3ab17cf9410d4 # main as of 2026-10-18
+    permissions:
+      contents: read
+
+  ci-gate:
+    name: ci-gate
+    if: always()
+    needs: [hygiene, sdk]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    permissions: {}
+    steps:
+      - name: Check every job passed
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: echo "$NEEDS" | jq -e '[.[] | .result] | all(. == "success" or . == "skipped")'

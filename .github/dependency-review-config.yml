@@ -1,0 +1,36 @@
+# Spec 0009 DEP-8 (sdk), DEP-2: an SDK repo allows spec 0009 DEP-1's Permissive list only (no MPL-2.0).
+# allow-dependencies-licenses holds this SDK's dev exceptions from spec 0009 DEP-5's table, by package URL without a
+# version. Keep the entries your repo needs and delete the rest; add one only with that table, in the same PR.
+fail-on-severity: moderate
+# The action checks only runtime dependencies by default, so a dev dependency (DEP-5) would skip the license gate.
+fail-on-scopes:
+  - runtime
+  - development
+  - unknown
+allow-licenses:
+  - MIT
+  - MIT-0
+  - Apache-2.0
+  - BSD-2-Clause
+  - BSD-3-Clause
+  - ISC
+  - 0BSD
+  - Zlib
+  - PostgreSQL
+  - BlueOak-1.0.0
+  - Unlicense
+  - CC0-1.0
+allow-dependencies-licenses:
+  # TypeScript SDKs (the Vite+ toolchain pulls these in at build time)
+  - pkg:npm/caniuse-lite
+  - pkg:npm/lightningcss
+  - pkg:npm/lightningcss-darwin-arm64
+  - pkg:npm/lightningcss-darwin-x64
+  - pkg:npm/lightningcss-linux-arm64-gnu
+  - pkg:npm/lightningcss-linux-arm64-musl
+  - pkg:npm/lightningcss-linux-x64-gnu
+  - pkg:npm/lightningcss-linux-x64-musl
+  - pkg:npm/lightningcss-win32-arm64-msvc
+  - pkg:npm/lightningcss-win32-x64-msvc
+  # .NET SDK
+  - pkg:nuget/Microsoft.Testing.Extensions.CodeCoverage

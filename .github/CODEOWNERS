@@ -1,0 +1,3 @@
+# Spec 0010 OWN-1: one maintainer owns everything for now. Per area lines and "Require code owner review" come with
+# the second maintainer (OWN-2), since GitHub doesn't let an author approve their own PR.
+* @Atteprojects

@@ -1,0 +1,9 @@
+# zizmor settings for this repo (spec 0008 CI-4). Each change from zizmor's defaults names the spec rule behind it.
+rules:
+  # DPB-2: Dependabot waits 3 days, the same as pnpm's minimumReleaseAge (spec 0003 SEC-5).
+  dependabot-cooldown:
+    config:
+      days: 3
+  # CI-4: this repo's own reusable workflows are called by the local ./ path, so a PR runs its own version.
+  self-repository:
+    disable: true
