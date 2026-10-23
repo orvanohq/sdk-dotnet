@@ -1,0 +1,28 @@
+<Project>
+  <!-- Set before the root file is read, so its packable settings (LIB-2: AOT analyzers, CS1591) skip the tests. -->
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+  <!-- Spec 0002 TST-1, LIB-12: xUnit v3 on Microsoft.Testing.Platform. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <!-- LIB-2 documents every public member of the package; tests are public only because xUnit needs them to be. -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <!-- xUnit's generated entry point calls GetResult (banned by spec 0008 LNT-6, ASY-1); this turns its warnings off. -->
+    <DefineConstants>$(DefineConstants);XUNIT_GENERATED_DISABLE_WARNINGS</DefineConstants>
+  </PropertyGroup>
+  <!-- Spec 0008 CI-6: coverage is collected (Cobertura) and reported, never gated. -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
+    <PackageReference Include="Shouldly" />
+    <PackageReference Include="xunit.v3.mtp-v2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Shouldly" />
+    <Using Include="Xunit" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)../src/Orvano.Server/Orvano.Server.csproj" />
+  </ItemGroup>
+</Project>

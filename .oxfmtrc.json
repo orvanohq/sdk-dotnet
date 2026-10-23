@@ -1,0 +1,7 @@
+{
+  "ignorePatterns": [
+    "**/packages.lock.json",
+    "tests/Orvano.Server.ConformanceTests/Generated/scenarios.json",
+    ".orvano/**"
+  ]
+}

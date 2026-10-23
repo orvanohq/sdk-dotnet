@@ -17,20 +17,104 @@ concurrency:
 
 jobs:
   hygiene:
-    uses: orvanohq/orvano/.github/workflows/repo-hygiene.yml@cb12f1df33e00f892de7040a05e3ab17cf9410d4 # main as of 2026-10-18
+    uses: orvanohq/orvano/.github/workflows/repo-hygiene.yml@72939c23d63ee4c020ae92a787332280b45ef739 # main as of 2026-10-23
     permissions:
       contents: read
       pull-requests: read # the dco job reads the PR's commits (spec 0010 DCO-1)
 
   sdk:
-    uses: orvanohq/orvano/.github/workflows/sdk-dotnet.yml@cb12f1df33e00f892de7040a05e3ab17cf9410d4 # main as of 2026-10-18
+    uses: orvanohq/orvano/.github/workflows/sdk-dotnet.yml@72939c23d63ee4c020ae92a787332280b45ef739 # main as of 2026-10-23
     permissions:
       contents: read
+
+  # Spec 0014 RGN-3: regenerate from the pinned orvano commit and fail on any difference. The generator is Node, so
+  # this job needs Node 24 and pnpm (RGN-2).
+  drift:
+    name: drift
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24.22.0
+      - name: Enable pnpm through corepack (the orvano checkout pins its version)
+        run: corepack enable
+      - name: Cache the orvano checkout (RGN-2)
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .orvano
+          key: orvano-${{ hashFiles('orvano-contract.json') }}
+      - name: Regenerate from the pin (checks the contract hash too)
+        env:
+          COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
+        run: tool/regenerate.sh
+      - name: Generated code matches the pin
+        run: |
+          git status --porcelain
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
+
+  # Spec 0014 CNF-5, CNF-6, spec 0002 LIB-12: every server scenario against Orvano and the stub from
+  # api/conformance/compose.yaml at the pinned commit. The server image is built from that commit here, because
+  # nothing publishes ghcr.io/orvanohq/orvano:sha-<commit> yet; switch to pulling it then.
+  conformance:
+    name: conformance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24.22.0
+      - name: Cache the orvano checkout (RGN-2)
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .orvano
+          key: orvano-${{ hashFiles('orvano-contract.json') }}
+      - name: Cache NuGet packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: nuget-${{ runner.os }}-
+      - name: Fetch the pinned orvano commit
+        run: tool/regenerate.sh --fetch-only
+      - name: Build the Orvano image at the pinned commit
+        run: docker build --file .orvano/deploy/Dockerfile --tag orvano:pinned .orvano
+      - name: Start Orvano, PostgreSQL, and the stub
+        env:
+          ORVANO_IMAGE: orvano
+          ORVANO_IMAGE_TAG: pinned
+        run: docker compose --file .orvano/api/conformance/compose.yaml up --detach --wait
+      - run: dotnet restore --locked-mode
+      - name: Conformance
+        run: dotnet run --project tests/Orvano.Server.ConformanceTests --configuration Release --no-restore -p:CI=true
+      - name: Server logs
+        if: failure()
+        env:
+          ORVANO_IMAGE: orvano
+          ORVANO_IMAGE_TAG: pinned
+        run: docker compose --file .orvano/api/conformance/compose.yaml logs --no-color
 
   ci-gate:
     name: ci-gate
     if: always()
-    needs: [hygiene, sdk]
+    needs: [hygiene, sdk, drift, conformance]
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     permissions: {}
