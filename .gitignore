@@ -1,0 +1,6 @@
+# The orvano checkout tool/regenerate.sh fetches (spec 0014 RGN-2).
+.orvano/
+bin/
+obj/
+# .NET test results and coverage (spec 0008 CI-6)
+TestResults/

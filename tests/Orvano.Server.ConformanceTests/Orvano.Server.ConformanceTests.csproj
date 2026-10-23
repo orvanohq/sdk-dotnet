@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Spec 0002 LIB-12, spec 0014 CNF-5: the shared conformance suite against a real server and the stub, from
+       api/conformance/compose.yaml at the pinned orvano commit. Generated/ is written by the orvano generator. -->
+  <PropertyGroup>
+    <!-- It needs the servers, so `dotnet test` (the shared sdk-dotnet.yml unit run) leaves it out; the conformance job
+         runs it with `dotnet run` on this project. -->
+    <IsTestProject>false</IsTestProject>
+    <IsTestingPlatformApplication>false</IsTestingPlatformApplication>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="Generated/scenarios.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="skip.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

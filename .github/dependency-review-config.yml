@@ -21,16 +21,4 @@ allow-licenses:
   - Unlicense
   - CC0-1.0
 allow-dependencies-licenses:
-  # TypeScript SDKs (the Vite+ toolchain pulls these in at build time)
-  - pkg:npm/caniuse-lite
-  - pkg:npm/lightningcss
-  - pkg:npm/lightningcss-darwin-arm64
-  - pkg:npm/lightningcss-darwin-x64
-  - pkg:npm/lightningcss-linux-arm64-gnu
-  - pkg:npm/lightningcss-linux-arm64-musl
-  - pkg:npm/lightningcss-linux-x64-gnu
-  - pkg:npm/lightningcss-linux-x64-musl
-  - pkg:npm/lightningcss-win32-arm64-msvc
-  - pkg:npm/lightningcss-win32-x64-msvc
-  # .NET SDK
   - pkg:nuget/Microsoft.Testing.Extensions.CodeCoverage

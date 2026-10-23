@@ -1,0 +1,172 @@
+#nullable enable
+const Orvano.Server.OrvanoContract.ApiVersion = "2026-10-22" -> string!
+const Orvano.Server.OrvanoErrorCodes.Conflict = "conflict" -> string!
+const Orvano.Server.OrvanoErrorCodes.Forbidden = "forbidden" -> string!
+const Orvano.Server.OrvanoErrorCodes.IdempotencyInProgress = "idempotency_in_progress" -> string!
+const Orvano.Server.OrvanoErrorCodes.IdempotencyKeyReused = "idempotency_key_reused" -> string!
+const Orvano.Server.OrvanoErrorCodes.InsufficientScope = "insufficient_scope" -> string!
+const Orvano.Server.OrvanoErrorCodes.Internal = "internal" -> string!
+const Orvano.Server.OrvanoErrorCodes.InvalidCursor = "invalid_cursor" -> string!
+const Orvano.Server.OrvanoErrorCodes.InvalidRequest = "invalid_request" -> string!
+const Orvano.Server.OrvanoErrorCodes.MethodNotAllowed = "method_not_allowed" -> string!
+const Orvano.Server.OrvanoErrorCodes.NotFound = "not_found" -> string!
+const Orvano.Server.OrvanoErrorCodes.PayloadTooLarge = "payload_too_large" -> string!
+const Orvano.Server.OrvanoErrorCodes.RateLimited = "rate_limited" -> string!
+const Orvano.Server.OrvanoErrorCodes.SessionExpired = "session_expired" -> string!
+const Orvano.Server.OrvanoErrorCodes.Timeout = "timeout" -> string!
+const Orvano.Server.OrvanoErrorCodes.Unauthorized = "unauthorized" -> string!
+const Orvano.Server.OrvanoErrorCodes.Unavailable = "unavailable" -> string!
+const Orvano.Server.OrvanoErrorCodes.Unknown = "unknown" -> string!
+const Orvano.Server.OrvanoErrorCodes.UnsupportedApiVersion = "unsupported_api_version" -> string!
+const Orvano.Server.OrvanoErrorCodes.UnsupportedMediaType = "unsupported_media_type" -> string!
+const Orvano.Server.OrvanoErrorCodes.ValidationFailed = "validation_failed" -> string!
+const Orvano.Server.OrvanoErrorCodes.VersionConflict = "version_conflict" -> string!
+const Orvano.Server.OrvanoHeaders.Authorization = "Authorization" -> string!
+const Orvano.Server.OrvanoHeaders.ETag = "ETag" -> string!
+const Orvano.Server.OrvanoHeaders.IdempotencyKey = "Idempotency-Key" -> string!
+const Orvano.Server.OrvanoHeaders.IfMatch = "If-Match" -> string!
+const Orvano.Server.OrvanoHeaders.OrvanoApiVersion = "Orvano-Api-Version" -> string!
+const Orvano.Server.OrvanoHeaders.OrvanoClient = "Orvano-Client" -> string!
+const Orvano.Server.OrvanoHeaders.OrvanoCsrf = "Orvano-Csrf" -> string!
+const Orvano.Server.OrvanoHeaders.OrvanoIdempotentReplayed = "Orvano-Idempotent-Replayed" -> string!
+const Orvano.Server.OrvanoHeaders.OrvanoKey = "Orvano-Key" -> string!
+const Orvano.Server.OrvanoHeaders.OrvanoRequestId = "Orvano-Request-Id" -> string!
+const Orvano.Server.OrvanoHeaders.RetryAfter = "Retry-After" -> string!
+const Orvano.Server.OrvanoHeaders.Traceparent = "traceparent" -> string!
+const Orvano.Server.OrvanoHeaders.Tracestate = "tracestate" -> string!
+Orvano.Server.HealthResponse
+Orvano.Server.HealthResponse.<Clone>$() -> Orvano.Server.HealthResponse!
+Orvano.Server.HealthResponse.ApiVersions.get -> System.Collections.Generic.IReadOnlyList<string!>!
+Orvano.Server.HealthResponse.ApiVersions.init -> void
+Orvano.Server.HealthResponse.Equals(Orvano.Server.HealthResponse? other) -> bool
+Orvano.Server.HealthResponse.HealthResponse() -> void
+Orvano.Server.HealthResponse.Status.get -> string!
+Orvano.Server.HealthResponse.Status.init -> void
+Orvano.Server.HealthService
+Orvano.Server.HealthService.GetAsync(Orvano.Server.OrvanoRequestOptions? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Orvano.Server.HealthResponse!>!
+Orvano.Server.OrvanoClient
+Orvano.Server.OrvanoClient.OrvanoClient(Orvano.Server.OrvanoClientOptions! options, System.Net.Http.HttpClient? httpClient = null) -> void
+Orvano.Server.OrvanoClientOptions
+Orvano.Server.OrvanoClientOptions.AllowInsecureEndpoint.get -> bool
+Orvano.Server.OrvanoClientOptions.AllowInsecureEndpoint.set -> void
+Orvano.Server.OrvanoClientOptions.ApiKey.get -> string?
+Orvano.Server.OrvanoClientOptions.ApiKey.set -> void
+Orvano.Server.OrvanoClientOptions.Endpoint.get -> System.Uri?
+Orvano.Server.OrvanoClientOptions.Endpoint.set -> void
+Orvano.Server.OrvanoClientOptions.LoggerFactory.get -> Microsoft.Extensions.Logging.ILoggerFactory?
+Orvano.Server.OrvanoClientOptions.LoggerFactory.set -> void
+Orvano.Server.OrvanoClientOptions.OrvanoClientOptions() -> void
+Orvano.Server.OrvanoClientOptions.ProjectId.get -> System.Guid
+Orvano.Server.OrvanoClientOptions.ProjectId.set -> void
+Orvano.Server.OrvanoClientOptions.Retry.get -> Orvano.Server.OrvanoRetryOptions!
+Orvano.Server.OrvanoClientOptions.Retry.set -> void
+Orvano.Server.OrvanoClientOptions.Timeout.get -> System.TimeSpan
+Orvano.Server.OrvanoClientOptions.Timeout.set -> void
+Orvano.Server.OrvanoClientOptions.TimeProvider.get -> System.TimeProvider!
+Orvano.Server.OrvanoClientOptions.TimeProvider.set -> void
+Orvano.Server.OrvanoContract
+Orvano.Server.OrvanoErrorCodes
+Orvano.Server.OrvanoErrorKind
+Orvano.Server.OrvanoErrorKind.Conflict = 5 -> Orvano.Server.OrvanoErrorKind
+Orvano.Server.OrvanoErrorKind.Forbidden = 2 -> Orvano.Server.OrvanoErrorKind
+Orvano.Server.OrvanoErrorKind.NotFound = 3 -> Orvano.Server.OrvanoErrorKind
+Orvano.Server.OrvanoErrorKind.RateLimited = 6 -> Orvano.Server.OrvanoErrorKind
+Orvano.Server.OrvanoErrorKind.Server = 7 -> Orvano.Server.OrvanoErrorKind
+Orvano.Server.OrvanoErrorKind.Timeout = 4 -> Orvano.Server.OrvanoErrorKind
+Orvano.Server.OrvanoErrorKind.Unauthenticated = 1 -> Orvano.Server.OrvanoErrorKind
+Orvano.Server.OrvanoErrorKind.Validation = 0 -> Orvano.Server.OrvanoErrorKind
+Orvano.Server.OrvanoException
+Orvano.Server.OrvanoException.Code.get -> string!
+Orvano.Server.OrvanoException.Detail.get -> string?
+Orvano.Server.OrvanoException.FieldErrors.get -> System.Collections.Generic.IReadOnlyList<Orvano.Server.OrvanoFieldError!>!
+Orvano.Server.OrvanoException.Kind.get -> Orvano.Server.OrvanoErrorKind
+Orvano.Server.OrvanoException.OrvanoException() -> void
+Orvano.Server.OrvanoException.OrvanoException(int statusCode, string! title, Orvano.Server.OrvanoProblem? problem, string? traceId, string! rawBody) -> void
+Orvano.Server.OrvanoException.OrvanoException(string! message) -> void
+Orvano.Server.OrvanoException.OrvanoException(string! message, System.Exception? innerException) -> void
+Orvano.Server.OrvanoException.Problem.get -> Orvano.Server.OrvanoProblem?
+Orvano.Server.OrvanoException.RawBody.get -> string!
+Orvano.Server.OrvanoException.StatusCode.get -> int
+Orvano.Server.OrvanoException.Title.get -> string!
+Orvano.Server.OrvanoException.TraceId.get -> string?
+Orvano.Server.OrvanoFieldError
+Orvano.Server.OrvanoFieldError.<Clone>$() -> Orvano.Server.OrvanoFieldError!
+Orvano.Server.OrvanoFieldError.Code.get -> string!
+Orvano.Server.OrvanoFieldError.Code.init -> void
+Orvano.Server.OrvanoFieldError.Deconstruct(out string! Field, out string! Location, out string! Code, out string! Message) -> void
+Orvano.Server.OrvanoFieldError.Equals(Orvano.Server.OrvanoFieldError? other) -> bool
+Orvano.Server.OrvanoFieldError.Field.get -> string!
+Orvano.Server.OrvanoFieldError.Field.init -> void
+Orvano.Server.OrvanoFieldError.Location.get -> string!
+Orvano.Server.OrvanoFieldError.Location.init -> void
+Orvano.Server.OrvanoFieldError.Message.get -> string!
+Orvano.Server.OrvanoFieldError.Message.init -> void
+Orvano.Server.OrvanoFieldError.OrvanoFieldError(string! Field, string! Location, string! Code, string! Message) -> void
+Orvano.Server.OrvanoHeaders
+Orvano.Server.OrvanoProblem
+Orvano.Server.OrvanoProblem.<Clone>$() -> Orvano.Server.OrvanoProblem!
+Orvano.Server.OrvanoProblem.Code.get -> string!
+Orvano.Server.OrvanoProblem.Code.init -> void
+Orvano.Server.OrvanoProblem.CurrentVersion.get -> string?
+Orvano.Server.OrvanoProblem.CurrentVersion.init -> void
+Orvano.Server.OrvanoProblem.Detail.get -> string?
+Orvano.Server.OrvanoProblem.Detail.init -> void
+Orvano.Server.OrvanoProblem.Equals(Orvano.Server.OrvanoProblem? other) -> bool
+Orvano.Server.OrvanoProblem.Errors.get -> System.Collections.Generic.IReadOnlyList<Orvano.Server.OrvanoFieldError!>!
+Orvano.Server.OrvanoProblem.Errors.init -> void
+Orvano.Server.OrvanoProblem.OrvanoProblem() -> void
+Orvano.Server.OrvanoProblem.RetryAfter.get -> int?
+Orvano.Server.OrvanoProblem.RetryAfter.init -> void
+Orvano.Server.OrvanoProblem.Status.get -> int
+Orvano.Server.OrvanoProblem.Status.init -> void
+Orvano.Server.OrvanoProblem.SupportedVersions.get -> System.Collections.Generic.IReadOnlyList<string!>?
+Orvano.Server.OrvanoProblem.SupportedVersions.init -> void
+Orvano.Server.OrvanoProblem.Title.get -> string?
+Orvano.Server.OrvanoProblem.Title.init -> void
+Orvano.Server.OrvanoProblem.TraceId.get -> string?
+Orvano.Server.OrvanoProblem.TraceId.init -> void
+Orvano.Server.OrvanoProblem.Type.get -> string?
+Orvano.Server.OrvanoProblem.Type.init -> void
+Orvano.Server.OrvanoRateLimitedException
+Orvano.Server.OrvanoRateLimitedException.OrvanoRateLimitedException() -> void
+Orvano.Server.OrvanoRateLimitedException.OrvanoRateLimitedException(string! message) -> void
+Orvano.Server.OrvanoRateLimitedException.OrvanoRateLimitedException(string! message, System.Exception? innerException) -> void
+Orvano.Server.OrvanoRateLimitedException.OrvanoRateLimitedException(string! title, Orvano.Server.OrvanoProblem? problem, string? traceId, string! rawBody, System.TimeSpan? retryAfter) -> void
+Orvano.Server.OrvanoRateLimitedException.RetryAfter.get -> System.TimeSpan?
+Orvano.Server.OrvanoRequestOptions
+Orvano.Server.OrvanoRequestOptions.Headers.get -> System.Collections.Generic.IReadOnlyDictionary<string!, string!>?
+Orvano.Server.OrvanoRequestOptions.Headers.init -> void
+Orvano.Server.OrvanoRequestOptions.OrvanoRequestOptions() -> void
+Orvano.Server.OrvanoRequestOptions.Retry.get -> Orvano.Server.OrvanoRetryOptions?
+Orvano.Server.OrvanoRequestOptions.Retry.init -> void
+Orvano.Server.OrvanoRequestOptions.Timeout.get -> System.TimeSpan?
+Orvano.Server.OrvanoRequestOptions.Timeout.init -> void
+Orvano.Server.OrvanoRetryOptions
+Orvano.Server.OrvanoRetryOptions.BaseDelay.get -> System.TimeSpan
+Orvano.Server.OrvanoRetryOptions.BaseDelay.set -> void
+Orvano.Server.OrvanoRetryOptions.MaxRetries.get -> int
+Orvano.Server.OrvanoRetryOptions.MaxRetries.set -> void
+Orvano.Server.OrvanoRetryOptions.MaxRetryAfter.get -> System.TimeSpan
+Orvano.Server.OrvanoRetryOptions.MaxRetryAfter.set -> void
+Orvano.Server.OrvanoRetryOptions.OrvanoRetryOptions() -> void
+Orvano.Server.OrvanoServiceCollectionExtensions
+Orvano.Server.OrvanoServices
+Orvano.Server.OrvanoServices.Health.get -> Orvano.Server.HealthService!
+override Orvano.Server.HealthResponse.Equals(object? obj) -> bool
+override Orvano.Server.HealthResponse.GetHashCode() -> int
+override Orvano.Server.HealthResponse.ToString() -> string!
+override Orvano.Server.OrvanoClient.ToString() -> string!
+override Orvano.Server.OrvanoClientOptions.ToString() -> string!
+override Orvano.Server.OrvanoFieldError.Equals(object? obj) -> bool
+override Orvano.Server.OrvanoFieldError.GetHashCode() -> int
+override Orvano.Server.OrvanoFieldError.ToString() -> string!
+override Orvano.Server.OrvanoProblem.Equals(object? obj) -> bool
+override Orvano.Server.OrvanoProblem.GetHashCode() -> int
+override Orvano.Server.OrvanoProblem.ToString() -> string!
+static Orvano.Server.HealthResponse.operator !=(Orvano.Server.HealthResponse? left, Orvano.Server.HealthResponse? right) -> bool
+static Orvano.Server.HealthResponse.operator ==(Orvano.Server.HealthResponse? left, Orvano.Server.HealthResponse? right) -> bool
+static Orvano.Server.OrvanoFieldError.operator !=(Orvano.Server.OrvanoFieldError? left, Orvano.Server.OrvanoFieldError? right) -> bool
+static Orvano.Server.OrvanoFieldError.operator ==(Orvano.Server.OrvanoFieldError? left, Orvano.Server.OrvanoFieldError? right) -> bool
+static Orvano.Server.OrvanoProblem.operator !=(Orvano.Server.OrvanoProblem? left, Orvano.Server.OrvanoProblem? right) -> bool
+static Orvano.Server.OrvanoProblem.operator ==(Orvano.Server.OrvanoProblem? left, Orvano.Server.OrvanoProblem? right) -> bool
+static Orvano.Server.OrvanoServiceCollectionExtensions.AddOrvano(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<Orvano.Server.OrvanoClientOptions!>! configure) -> Microsoft.Extensions.DependencyInjection.IHttpClientBuilder!

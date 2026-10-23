@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Spec 0002 LIB-1 to LIB-3, LIB-10, LIB-11: the Orvano.Server package. Generated/ is written by the orvano
+       generator (tool/regenerate.sh); everything else here is hand written. -->
+  <PropertyGroup>
+    <PackageId>Orvano.Server</PackageId>
+    <RootNamespace>Orvano.Server</RootNamespace>
+    <Description>The Orvano server SDK for .NET: call an Orvano project from your backend with a secret key.</Description>
+    <!-- Feature 52 owns release versions; until then the package says 0.1.0. -->
+    <Version>0.1.0</Version>
+    <!-- HDR-3: Orvano-Client is Orvano.Server/<informational version>, without the commit Source Link appends. -->
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <!-- LIB-3: central versions never raise the Microsoft.Extensions.Http floor. -->
+    <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <!-- Deviation LIB-2: no Orvano package icon exists yet; feature 52 adds it with the first release. -->
+    <PackageIcon></PackageIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="PublicAPI.Shipped.txt" />
+    <AdditionalFiles Include="PublicAPI.Unshipped.txt" />
+    <None Include="$(MSBuildThisFileDirectory)../../README.md" Pack="true" PackagePath="" Visible="false" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Orvano.Server.Tests" />
+    <InternalsVisibleTo Include="Orvano.Server.ConformanceTests" />
+  </ItemGroup>
+</Project>

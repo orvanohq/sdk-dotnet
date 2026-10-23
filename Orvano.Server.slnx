@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Orvano.Server/Orvano.Server.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Orvano.Server.ConformanceTests/Orvano.Server.ConformanceTests.csproj" />
+    <Project Path="tests/Orvano.Server.Tests/Orvano.Server.Tests.csproj" />
+  </Folder>
+</Solution>

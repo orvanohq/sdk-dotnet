@@ -378,3 +378,7 @@ generated_code = true
 # Spec 0002 TST-3 names tests <Behavior>_<expected>_when_<condition>.
 [tests/**.cs]
 dotnet_diagnostic.CA1707.severity = none
+
+# Spec 0002 ASY-3: the library calls ConfigureAwait(false) on every await (CA2007 on in the SDK repo only).
+[src/**.cs]
+dotnet_diagnostic.CA2007.severity = warning

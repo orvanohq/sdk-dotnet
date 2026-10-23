@@ -1,0 +1,3 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Spec 0002 LIB-12: unit tests with a hand written stub HttpMessageHandler, never a mocked HttpClient. -->
+</Project>
