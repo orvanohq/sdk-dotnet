@@ -1,13 +1,6 @@
 # Spec 0008 FMT-2: typos skips generated and build output, plus the lockfiles' hashes. Add a real word the checker
 # doesn't know under [default.extend-words].
 [files]
-extend-exclude = [
-  "packages.lock.json",
-  ".orvano/",
-  "bin/",
-  "obj/",
-  "TestResults/",
-  "coverage/",
-]
+extend-exclude = ["packages.lock.json", ".orvano/", "bin/", "obj/", "TestResults/", "coverage/"]
 
 [default.extend-words]
