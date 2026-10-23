@@ -110,7 +110,10 @@ internal sealed class OrvanoTransport
                         throw new RedirectRefusedException(status);
                     }
                     byte[] body = await response.Content.ReadAsByteArrayAsync(linked.Token).ConfigureAwait(false);
-                    Log.Call(_logger, call.Method.Method, uri.AbsolutePath, status, _timeProvider.GetElapsedTime(started).TotalMilliseconds);
+                    if (_logger.IsEnabled(LogLevel.Debug))
+                    {
+                        Log.Call(_logger, call.Method.Method, uri.AbsolutePath, status, _timeProvider.GetElapsedTime(started).TotalMilliseconds);
+                    }
                     if (status is >= 200 and < 300)
                     {
                         return body;
