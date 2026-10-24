@@ -152,6 +152,16 @@ Orvano.Server.OrvanoRetryOptions.OrvanoRetryOptions() -> void
 Orvano.Server.OrvanoServiceCollectionExtensions
 Orvano.Server.OrvanoServices
 Orvano.Server.OrvanoServices.Health.get -> Orvano.Server.HealthService!
+Orvano.Server.ResultPage<T>
+Orvano.Server.ResultPage<T>.<Clone>$() -> Orvano.Server.ResultPage<T>!
+Orvano.Server.ResultPage<T>.Equals(Orvano.Server.ResultPage<T>? other) -> bool
+Orvano.Server.ResultPage<T>.Items.get -> System.Collections.Generic.IReadOnlyList<T>!
+Orvano.Server.ResultPage<T>.Items.init -> void
+Orvano.Server.ResultPage<T>.NextCursor.get -> string?
+Orvano.Server.ResultPage<T>.NextCursor.init -> void
+Orvano.Server.ResultPage<T>.ResultPage() -> void
+Orvano.Server.ResultPage<T>.Total.get -> int?
+Orvano.Server.ResultPage<T>.Total.init -> void
 override Orvano.Server.HealthResponse.Equals(object? obj) -> bool
 override Orvano.Server.HealthResponse.GetHashCode() -> int
 override Orvano.Server.HealthResponse.ToString() -> string!
@@ -163,6 +173,9 @@ override Orvano.Server.OrvanoFieldError.ToString() -> string!
 override Orvano.Server.OrvanoProblem.Equals(object? obj) -> bool
 override Orvano.Server.OrvanoProblem.GetHashCode() -> int
 override Orvano.Server.OrvanoProblem.ToString() -> string!
+override Orvano.Server.ResultPage<T>.Equals(object? obj) -> bool
+override Orvano.Server.ResultPage<T>.GetHashCode() -> int
+override Orvano.Server.ResultPage<T>.ToString() -> string!
 static Orvano.Server.HealthResponse.operator !=(Orvano.Server.HealthResponse? left, Orvano.Server.HealthResponse? right) -> bool
 static Orvano.Server.HealthResponse.operator ==(Orvano.Server.HealthResponse? left, Orvano.Server.HealthResponse? right) -> bool
 static Orvano.Server.OrvanoFieldError.operator !=(Orvano.Server.OrvanoFieldError? left, Orvano.Server.OrvanoFieldError? right) -> bool
@@ -170,3 +183,5 @@ static Orvano.Server.OrvanoFieldError.operator ==(Orvano.Server.OrvanoFieldError
 static Orvano.Server.OrvanoProblem.operator !=(Orvano.Server.OrvanoProblem? left, Orvano.Server.OrvanoProblem? right) -> bool
 static Orvano.Server.OrvanoProblem.operator ==(Orvano.Server.OrvanoProblem? left, Orvano.Server.OrvanoProblem? right) -> bool
 static Orvano.Server.OrvanoServiceCollectionExtensions.AddOrvano(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<Orvano.Server.OrvanoClientOptions!>! configure) -> Microsoft.Extensions.DependencyInjection.IHttpClientBuilder!
+static Orvano.Server.ResultPage<T>.operator !=(Orvano.Server.ResultPage<T>? left, Orvano.Server.ResultPage<T>? right) -> bool
+static Orvano.Server.ResultPage<T>.operator ==(Orvano.Server.ResultPage<T>? left, Orvano.Server.ResultPage<T>? right) -> bool
