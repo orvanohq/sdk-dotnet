@@ -42,6 +42,37 @@ public sealed class OrvanoRequestOptions
             Retry = options?.Retry,
             Headers = options?.Headers,
             IfMatch = version,
+            IdempotencyKey = options?.IdempotencyKey,
+        };
+    }
+
+    /// <summary>The key a generated call sends as <c>Idempotency-Key</c> (spec 0014 IDM-1), from its <c>idempotencyKey</c> parameter.</summary>
+    internal string? IdempotencyKey { get; init; }
+
+    /// <summary>
+    /// <paramref name="options"/> with <paramref name="key"/> to send as <c>Idempotency-Key</c>, which makes the call
+    /// retryable (IDM-3); the generated services call this for marked operations' <c>idempotencyKey</c> parameter. A
+    /// null <paramref name="key"/> leaves the options as they are.
+    /// </summary>
+    internal static OrvanoRequestOptions? WithIdempotencyKey(OrvanoRequestOptions? options, string? key)
+    {
+        if (key is null)
+        {
+            return options;
+        }
+
+        if (key.Length is 0 or > 255 || key.AsSpan().IndexOfAnyExceptInRange(' ', '~') >= 0)
+        {
+            throw new ArgumentException("idempotencyKey must be 1 to 255 printable ASCII characters.", nameof(key));
+        }
+
+        return new OrvanoRequestOptions
+        {
+            Timeout = options?.Timeout,
+            Retry = options?.Retry,
+            Headers = options?.Headers,
+            IfMatch = options?.IfMatch,
+            IdempotencyKey = key,
         };
     }
 }

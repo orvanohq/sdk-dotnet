@@ -90,8 +90,15 @@ internal sealed class OrvanoTransport
             // CNC-3, CNC-4: the version the caller read, as a strong ETag.
             headers.Add(new(OrvanoHeaders.IfMatch, $"\"{version}\""));
         }
+
+        if (options?.IdempotencyKey is { } key)
+        {
+            // IDM-1: the caller's key, on operations marked for it.
+            headers.Add(new(OrvanoHeaders.IdempotencyKey, key));
+        }
         var uri = new Uri(_endpoint, RelativeUri(call));
-        bool retriable = RetryRules.Methods.Contains(call.Method.Method);
+        // IDM-3: a non GET call is retried only with an idempotency key, which only marked operations take.
+        bool retriable = RetryRules.Methods.Contains(call.Method.Method) || options?.IdempotencyKey is not null;
 
         for (int attempt = 0; ; attempt++)
         {
