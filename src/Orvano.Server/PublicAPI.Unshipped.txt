@@ -44,6 +44,12 @@ Orvano.Server.HealthResponse.Status.get -> string!
 Orvano.Server.HealthResponse.Status.init -> void
 Orvano.Server.HealthService
 Orvano.Server.HealthService.GetAsync(Orvano.Server.OrvanoRequestOptions? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Orvano.Server.HealthResponse!>!
+Orvano.Server.Optional<T>
+Orvano.Server.Optional<T>.Equals(Orvano.Server.Optional<T> other) -> bool
+Orvano.Server.Optional<T>.HasValue.get -> bool
+Orvano.Server.Optional<T>.Optional() -> void
+Orvano.Server.Optional<T>.Optional(T value) -> void
+Orvano.Server.Optional<T>.Value.get -> T
 Orvano.Server.OrvanoClient
 Orvano.Server.OrvanoClient.OrvanoClient(Orvano.Server.OrvanoClientOptions! options, System.Net.Http.HttpClient? httpClient = null) -> void
 Orvano.Server.OrvanoClientOptions
@@ -165,6 +171,9 @@ Orvano.Server.ResultPage<T>.Total.init -> void
 override Orvano.Server.HealthResponse.Equals(object? obj) -> bool
 override Orvano.Server.HealthResponse.GetHashCode() -> int
 override Orvano.Server.HealthResponse.ToString() -> string!
+override Orvano.Server.Optional<T>.Equals(object? obj) -> bool
+override Orvano.Server.Optional<T>.GetHashCode() -> int
+override Orvano.Server.Optional<T>.ToString() -> string!
 override Orvano.Server.OrvanoClient.ToString() -> string!
 override Orvano.Server.OrvanoClientOptions.ToString() -> string!
 override Orvano.Server.OrvanoFieldError.Equals(object? obj) -> bool
@@ -178,6 +187,9 @@ override Orvano.Server.ResultPage<T>.GetHashCode() -> int
 override Orvano.Server.ResultPage<T>.ToString() -> string!
 static Orvano.Server.HealthResponse.operator !=(Orvano.Server.HealthResponse? left, Orvano.Server.HealthResponse? right) -> bool
 static Orvano.Server.HealthResponse.operator ==(Orvano.Server.HealthResponse? left, Orvano.Server.HealthResponse? right) -> bool
+static Orvano.Server.Optional<T>.implicit operator Orvano.Server.Optional<T>(T value) -> Orvano.Server.Optional<T>
+static Orvano.Server.Optional<T>.operator !=(Orvano.Server.Optional<T> left, Orvano.Server.Optional<T> right) -> bool
+static Orvano.Server.Optional<T>.operator ==(Orvano.Server.Optional<T> left, Orvano.Server.Optional<T> right) -> bool
 static Orvano.Server.OrvanoFieldError.operator !=(Orvano.Server.OrvanoFieldError? left, Orvano.Server.OrvanoFieldError? right) -> bool
 static Orvano.Server.OrvanoFieldError.operator ==(Orvano.Server.OrvanoFieldError? left, Orvano.Server.OrvanoFieldError? right) -> bool
 static Orvano.Server.OrvanoProblem.operator !=(Orvano.Server.OrvanoProblem? left, Orvano.Server.OrvanoProblem? right) -> bool

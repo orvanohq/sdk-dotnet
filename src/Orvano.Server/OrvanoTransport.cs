@@ -23,6 +23,7 @@ internal sealed class OrvanoTransport
         OrvanoHeaders.OrvanoKey,
         OrvanoHeaders.OrvanoClient,
         OrvanoHeaders.IdempotencyKey,
+        OrvanoHeaders.IfMatch,
         "User-Agent",
     ];
 
@@ -84,6 +85,11 @@ internal sealed class OrvanoTransport
         TimeSpan timeout = options?.Timeout is { } callTimeout ? CheckTimeout(callTimeout, "options.Timeout") : _timeout;
         OrvanoRetryOptions retry = options?.Retry?.Validated("options.Retry") ?? _retry;
         List<KeyValuePair<string, string>> headers = CheckHeaders(options?.Headers);
+        if (options?.IfMatch is { } version)
+        {
+            // CNC-3, CNC-4: the version the caller read, as a strong ETag.
+            headers.Add(new(OrvanoHeaders.IfMatch, $"\"{version}\""));
+        }
         var uri = new Uri(_endpoint, RelativeUri(call));
         bool retriable = RetryRules.Methods.Contains(call.Method.Method);
 
