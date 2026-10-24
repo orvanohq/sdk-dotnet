@@ -73,6 +73,70 @@ public sealed class TransportTests
     }
 
     [Fact]
+    [Trait("Spec", "0002:LIB-7")]
+    public async Task GetAsync_throws_the_last_error_when_every_retry_fails()
+    {
+        StubHandler handler = new StubHandler()
+            .Answer(HttpStatusCode.ServiceUnavailable)
+            .Answer(HttpStatusCode.ServiceUnavailable)
+            .Answer(HttpStatusCode.BadGateway)
+            .Answer(HttpStatusCode.OK, TestClients.HealthBody);
+
+        OrvanoException error = await Should.ThrowAsync<OrvanoException>(() => TestClients.Client(handler).Health.GetAsync(cancellationToken: Token));
+
+        error.StatusCode.ShouldBe(502);
+        handler.Requests.Count.ShouldBe(3);
+    }
+
+    [Theory]
+    [InlineData(HttpStatusCode.InternalServerError)]
+    [InlineData(HttpStatusCode.NotFound)]
+    [InlineData(HttpStatusCode.Conflict)]
+    [Trait("Spec", "0002:LIB-7")]
+    public async Task GetAsync_does_not_retry_when_the_status_is_not_on_the_retry_list(HttpStatusCode status)
+    {
+        StubHandler handler = new StubHandler().Answer(status).Answer(HttpStatusCode.OK, TestClients.HealthBody);
+
+        OrvanoException error = await Should.ThrowAsync<OrvanoException>(() => TestClients.Client(handler).Health.GetAsync(cancellationToken: Token));
+
+        error.StatusCode.ShouldBe((int)status);
+        handler.Requests.Count.ShouldBe(1);
+    }
+
+    [Fact]
+    [Trait("Spec", "0002:LIB-7")]
+    public async Task GetAsync_retries_at_once_when_Retry_After_is_a_date_in_the_past()
+    {
+        StubHandler handler = new StubHandler()
+            .Answer(
+                HttpStatusCode.ServiceUnavailable,
+                configure: response => response.Headers.RetryAfter = new RetryConditionHeaderValue(new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero)))
+            .Answer(HttpStatusCode.OK, TestClients.HealthBody);
+        // A backoff wait instead of the zero wait would outlast the 10 s bound and fail as a cancellation.
+        OrvanoClient client = TestClients.Client(handler, options => options.Retry.BaseDelay = TimeSpan.FromMinutes(10));
+        using var bound = CancellationTokenSource.CreateLinkedTokenSource(Token);
+        bound.CancelAfter(TimeSpan.FromSeconds(10));
+
+        HealthResponse health = await client.Health.GetAsync(cancellationToken: bound.Token);
+
+        health.Status.ShouldBe("ok");
+        handler.Requests.Count.ShouldBe(2);
+    }
+
+    [Fact]
+    [Trait("Spec", "0002:LIB-7")]
+    public async Task GetAsync_does_not_retry_when_the_connection_fails_its_tls_handshake()
+    {
+        StubHandler handler = new StubHandler()
+            .Fail(new HttpRequestException(HttpRequestError.SecureConnectionError, "TLS failed"))
+            .Answer(HttpStatusCode.OK, TestClients.HealthBody);
+
+        await Should.ThrowAsync<HttpRequestException>(() => TestClients.Client(handler).Health.GetAsync(cancellationToken: Token));
+
+        handler.Requests.Count.ShouldBe(1);
+    }
+
+    [Fact]
     [Trait("Spec", "0014:IDM-3")]
     public async Task SendAsync_does_not_retry_a_POST_when_the_server_answers_503()
     {
