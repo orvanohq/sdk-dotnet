@@ -207,11 +207,11 @@ internal sealed class OrvanoTransport
     /// </summary>
     private static string CheckSegment(string segment)
     {
-        ArgumentException.ThrowIfNullOrEmpty(segment, "path");
+        ArgumentException.ThrowIfNullOrEmpty(segment);
         string decoded = segment.Replace("%2e", ".", StringComparison.OrdinalIgnoreCase);
         if (decoded is "." or "..")
         {
-            throw new ArgumentException("A path value must not be \".\" or \"..\".", "path");
+            throw new ArgumentException("A path value must not be \".\" or \"..\".", nameof(segment));
         }
 
         return segment;
