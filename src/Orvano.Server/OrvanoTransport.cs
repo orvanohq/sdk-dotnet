@@ -189,7 +189,7 @@ internal sealed class OrvanoTransport
     private static string RelativeUri(OrvanoCall call)
     {
         var builder = new StringBuilder();
-        builder.AppendJoin('/', call.Path.Select(Uri.EscapeDataString));
+        builder.AppendJoin('/', call.Path.Select(static segment => Uri.EscapeDataString(CheckSegment(segment))));
         for (int index = 0; index < call.Query.Count; index++)
         {
             (string? name, string? value) = call.Query[index];
@@ -199,6 +199,22 @@ internal sealed class OrvanoTransport
                 .Append(Uri.EscapeDataString(value));
         }
         return builder.ToString();
+    }
+
+    /// <summary>
+    /// Refuses an empty or dot segment before any request (LIB-6, spec 0014 PTH-4): <c>Uri</c> removes <c>.</c> and
+    /// <c>..</c> (also as <c>%2e</c>), which would send the call to another route.
+    /// </summary>
+    private static string CheckSegment(string segment)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(segment);
+        string decoded = segment.Replace("%2e", ".", StringComparison.OrdinalIgnoreCase);
+        if (decoded is "." or "..")
+        {
+            throw new ArgumentException("A path value must not be \".\" or \"..\".", nameof(segment));
+        }
+
+        return segment;
     }
 
     private static List<KeyValuePair<string, string>> CheckHeaders(IReadOnlyDictionary<string, string>? headers)

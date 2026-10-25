@@ -268,6 +268,22 @@ public sealed class TransportTests
     }
 
     [Theory]
+    [Trait("Spec", "0014:PTH-4")]
+    [InlineData("")]
+    [InlineData(".")]
+    [InlineData("..")]
+    [InlineData("%2E%2e")]
+    public async Task SendAsync_throws_ArgumentException_before_sending_when_a_path_value_is_empty_or_a_dot_segment(string value)
+    {
+        var handler = new StubHandler();
+        var call = new OrvanoCall("Test_Get", HttpMethod.Get, ["v1", "test", value]);
+
+        await Should.ThrowAsync<ArgumentException>(() => TestClients.Client(handler).Transport.SendAsync(call, null, Token));
+
+        handler.Requests.ShouldBeEmpty();
+    }
+
+    [Theory]
     [InlineData("Orvano-Key")]
     [InlineData("authorization")]
     [InlineData("Orvano-Client")]
