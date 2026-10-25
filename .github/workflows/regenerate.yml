@@ -58,7 +58,12 @@ jobs:
           esac
           # RGN-9: the daily catch up, and a manual run with no commit, which runs the same check.
           if [ -z "$commit" ] && [ "$EVENT" != "repository_dispatch" ]; then
-            for sha in $(gh api "repos/orvanohq/orvano/commits?sha=main&path=api&per_page=30" --jq '.[].sha'); do
+            # A replaced image run leaves the newest api/ commit with no image, but every later main commit has the same
+            # api/, so the oldest of those with an image stands in for it. Older api/ commits come last (RGN-5, RGN-9).
+            api="$(gh api "repos/orvanohq/orvano/commits?sha=main&path=api&per_page=30" --jq '.[].sha')"
+            newest="${api%%$'\n'*}"
+            later="$(gh api "repos/orvanohq/orvano/compare/$newest...main" --jq '.commits[].sha')"
+            for sha in $newest $later $(sed 1d <<< "$api"); do
               if docker buildx imagetools inspect "$IMAGE:sha-$sha" > /dev/null 2>&1; then
                 commit="$sha"
                 break
@@ -118,7 +123,9 @@ jobs:
           repositories: ${{ github.event.repository.name }}
           permission-contents: write
           permission-pull-requests: write
-      # RGN-6, RGN-8: one signed off commit on top of main, force pushed, and at most one open PR, updated in place.
+      # RGN-6, RGN-8: one signed off commit on top of main and at most one open PR, updated in place. The open PR's
+      # branch is checked first: it is left alone when it already has these pins or holds a maintainer's commits, and
+      # the push replaces only the sha checked here, so an edit pushed meanwhile is never overwritten.
       - if: steps.changes.outputs.changed == 'true'
         name: Commit, push, and open or update the PR
         env:
@@ -132,15 +139,39 @@ jobs:
           git config user.email "$user_id+${APP_SLUG}[bot]@users.noreply.github.com"
           short="${COMMIT:0:7}"
           title="chore(sdk): regenerate from contract $short"
+          remote_url="https://x-access-token:$GH_TOKEN@github.com/$REPO.git"
+          number="$(gh pr list --repo "$REPO" --head "$BRANCH" --state open --json number --jq '.[0].number // empty')"
+          remote="$(git ls-remote "$remote_url" "refs/heads/$BRANCH" | cut -f1)"
+          if [ -n "$number" ] && [ -n "$remote" ]; then
+            pinned="$(gh api "repos/$REPO/contents/orvano-contract.json?ref=$remote" --jq .sha)"
+            if [ "$pinned" = "$(git hash-object orvano-contract.json)" ]; then
+              echo "PR #$number already has these pins; nothing to push."
+              exit 0
+            fi
+            # Failing to read the branch fails the run rather than pushing over it.
+            compare="$(gh api "repos/$REPO/compare/main...$remote")"
+            others="$(jq -r --arg bot "${APP_SLUG}[bot]" \
+              '.commits[] | select(.author.login != $bot) | .sha' <<< "$compare")"
+            if [ -n "$others" ]; then
+              echo "::warning::$BRANCH has commits not made by ${APP_SLUG}[bot], so it is left as it is."
+              # One comment per orvano commit, so the daily run doesn't repeat it.
+              comments="$(gh pr view "$number" --repo "$REPO" --json comments --jq '.comments[].body')"
+              if ! grep -qF "$COMMIT" <<< "$comments"; then
+                gh pr comment "$number" --repo "$REPO" --body "$(printf '%s %s' \
+                  "orvanohq/orvano@$COMMIT is ready, but this branch has commits not made by the bot, so the" \
+                  "regenerate workflow left it as it is (spec 0014 RGN-6). Merge or close this PR, then run Regenerate.")"
+              fi
+              exit 0
+            fi
+          fi
           git switch -C "$BRANCH"
           git add --all
           git commit --quiet --signoff --message "$title" \
             --message "Moves orvano-contract.json to orvanohq/orvano@$COMMIT and regenerates (spec 0014 RGN-6)."
-          git push --force "https://x-access-token:$GH_TOKEN@github.com/$REPO.git" "HEAD:refs/heads/$BRANCH"
+          git push --force-with-lease="refs/heads/$BRANCH:$remote" "$remote_url" "HEAD:refs/heads/$BRANCH"
           body="$(printf '%s\n\n%s\n' \
             "Regenerated from [orvanohq/orvano@$short](https://github.com/orvanohq/orvano/commit/$COMMIT) by the regenerate workflow (spec 0014 RGN-6)." \
             "Review it and squash merge it by hand once CI, including conformance, is green (RGN-7).")"
-          number="$(gh pr list --repo "$REPO" --head "$BRANCH" --state open --json number --jq '.[0].number // empty')"
           if [ -n "$number" ]; then
             gh pr edit "$number" --repo "$REPO" --title "$title" --body "$body"
           else
