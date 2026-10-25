@@ -89,7 +89,7 @@ jobs:
           echo "commit=$commit" >> "$GITHUB_OUTPUT"
       # The generator is Node, so this job needs Node 24 and pnpm too (RGN-2), set up like ci.yml's drift job.
       - if: steps.commit.outputs.commit != ''
-        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        uses: ./.github/actions/install-dotnet # aka.ms outage workaround; back to setup-dotnet once aka.ms works
         with:
           global-json-file: global.json
       - if: steps.commit.outputs.commit != ''

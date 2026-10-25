@@ -17,13 +17,13 @@ concurrency:
 
 jobs:
   hygiene:
-    uses: orvanohq/orvano/.github/workflows/repo-hygiene.yml@72939c23d63ee4c020ae92a787332280b45ef739 # main as of 2026-10-23
+    uses: orvanohq/orvano/.github/workflows/repo-hygiene.yml@2aedb2574176ebaa9660d5433e7d0990657df113 # main as of 2026-10-25
     permissions:
       contents: read
       pull-requests: read # the dco job reads the PR's commits (spec 0010 DCO-1)
 
   sdk:
-    uses: orvanohq/orvano/.github/workflows/sdk-dotnet.yml@72939c23d63ee4c020ae92a787332280b45ef739 # main as of 2026-10-23
+    uses: orvanohq/orvano/.github/workflows/sdk-dotnet.yml@2aedb2574176ebaa9660d5433e7d0990657df113 # main as of 2026-10-25
     permissions:
       contents: read
 
@@ -39,7 +39,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+      - uses: ./.github/actions/install-dotnet # aka.ms outage workaround; back to setup-dotnet once aka.ms works
         with:
           global-json-file: global.json
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -75,7 +75,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+      - uses: ./.github/actions/install-dotnet # aka.ms outage workaround; back to setup-dotnet once aka.ms works
         with:
           global-json-file: global.json
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
