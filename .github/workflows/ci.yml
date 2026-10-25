@@ -17,13 +17,13 @@ concurrency:
 
 jobs:
   hygiene:
-    uses: orvanohq/orvano/.github/workflows/repo-hygiene.yml@72939c23d63ee4c020ae92a787332280b45ef739 # main as of 2026-10-23
+    uses: orvanohq/orvano/.github/workflows/repo-hygiene.yml@2aedb2574176ebaa9660d5433e7d0990657df113 # main as of 2026-10-25
     permissions:
       contents: read
       pull-requests: read # the dco job reads the PR's commits (spec 0010 DCO-1)
 
   sdk:
-    uses: orvanohq/orvano/.github/workflows/sdk-dotnet.yml@72939c23d63ee4c020ae92a787332280b45ef739 # main as of 2026-10-23
+    uses: orvanohq/orvano/.github/workflows/sdk-dotnet.yml@2aedb2574176ebaa9660d5433e7d0990657df113 # main as of 2026-10-25
     permissions:
       contents: read
 
