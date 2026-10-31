@@ -66,7 +66,7 @@ Each attempt has 30 seconds (`OrvanoClientOptions.Timeout`, or per call with `Or
 
 `src/Orvano.Server/Generated/` and `tests/Orvano.Server.ConformanceTests/Generated/` come from the orvano generator at the commit in `orvano-contract.json` (spec 0014). Never edit them by hand; everything else is hand written.
 
-- Regenerate from the pin: `tool/regenerate.sh` (needs git, Node 24, pnpm through `corepack enable`, and the .NET SDK). Move the pin with `tool/regenerate.sh --pin <orvano commit>`. CI regenerates and fails on any difference.
+- Regenerate from the pin: `tool/regenerate.sh` (needs git, Node 24, pnpm through `corepack enable`, and the .NET SDK). It also brings `src/Orvano.Server/PublicAPI.Unshipped.txt` up to date, so review that diff as the public API change. Move the pin with `tool/regenerate.sh --pin <orvano commit>`. CI regenerates and fails on any difference.
 - Build and unit tests: `dotnet build Orvano.Server.slnx`, then `dotnet test`.
 - Conformance, against Orvano and the stub at the pinned commit:
 
