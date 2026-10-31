@@ -7,8 +7,10 @@ using System.Text.Json.Nodes;
 
 namespace Orvano.Server.ConformanceTests;
 
-/// <summary>The scenarios, the skips, and which scenarios ran; CNF-8 is checked when the run ends.</summary>
-public sealed class ConformanceRun : IAsyncDisposable
+/// <summary>
+/// The scenarios, the skips, the project they share (CNF-7), and which scenarios ran; CNF-8 is checked when the run ends.
+/// </summary>
+public sealed class ConformanceRun : IAsyncLifetime
 {
     internal static IReadOnlyList<JsonObject> Scenarios { get; } =
         [.. (Read("Generated/scenarios.json")?["scenarios"]?.AsArray() ?? []).OfType<JsonObject>()];
@@ -16,6 +18,16 @@ public sealed class ConformanceRun : IAsyncDisposable
     internal static IReadOnlyList<JsonObject> Skips { get; } = [.. (Read("skip.json")?.AsArray() ?? []).OfType<JsonObject>()];
 
     internal ConcurrentDictionary<string, bool> Ran { get; } = new(StringComparer.Ordinal);
+
+    internal BootstrappedProject? Project { get; private set; }
+
+    public async ValueTask InitializeAsync()
+    {
+        if (Scenarios.Any(ConformanceRunner.RequiresProject))
+        {
+            Project = await ConformanceRunner.BootstrapProjectAsync(TestContext.Current.CancellationToken);
+        }
+    }
 
     public ValueTask DisposeAsync()
     {
@@ -59,7 +71,8 @@ public sealed class ConformanceTests(ConformanceRun run)
         run.Ran[id] = true;
         JsonObject scenario = ConformanceRun.Scenarios.First(entry => entry["id"]?.GetValue<string>() == id);
 
-        IReadOnlyList<string> problems = await ConformanceRunner.RunScenarioAsync(scenario, Servers, TestContext.Current.CancellationToken);
+        IReadOnlyList<string> problems = await ConformanceRunner.RunScenarioAsync(
+            scenario, Servers, run.Project, TestContext.Current.CancellationToken);
 
         problems.ShouldBeEmpty();
     }
