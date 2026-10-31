@@ -66,7 +66,7 @@ Each attempt has 30 seconds (`OrvanoClientOptions.Timeout`, or per call with `Or
 
 `src/Orvano.Server/Generated/` and `tests/Orvano.Server.ConformanceTests/Generated/` come from the orvano generator at the commit in `orvano-contract.json` (spec 0014). Never edit them by hand; everything else is hand written.
 
-- Regenerate from the pin: `tool/regenerate.sh` (needs git, Node 24, pnpm through `corepack enable`, and the .NET SDK). Move the pin with `tool/regenerate.sh --pin <orvano commit>`. CI regenerates and fails on any difference.
+- Regenerate from the pin: `tool/regenerate.sh` (needs git, Node 24, pnpm through `corepack enable`, and the .NET SDK). It also brings `src/Orvano.Server/PublicAPI.Unshipped.txt` up to date, so review that diff as the public API change. Move the pin with `tool/regenerate.sh --pin <orvano commit>`. CI regenerates and fails on any difference.
 - Build and unit tests: `dotnet build Orvano.Server.slnx`, then `dotnet test`.
 - Conformance, against Orvano and the stub at the pinned commit:
 
@@ -77,7 +77,7 @@ Each attempt has 30 seconds (`OrvanoClientOptions.Timeout`, or per call with `Or
   dotnet run --project tests/Orvano.Server.ConformanceTests
   ```
 
-  `dotnet test` leaves this project out, since it needs the servers. Set `ORVANO_CONFORMANCE_URL` and `ORVANO_CONFORMANCE_STUB_URL` for other ports, and `ORVANO_CONFORMANCE_PARTIAL=1` when you run a few scenarios with a filter.
+  A scenario that requires a project gets one from `orvano admin bootstrap-project`, run through `docker compose exec` in that stack (spec 0017 SDK-4). `dotnet test` leaves this project out, since it needs the servers. Set `ORVANO_CONFORMANCE_URL` and `ORVANO_CONFORMANCE_STUB_URL` for other ports, and `ORVANO_CONFORMANCE_PARTIAL=1` when you run a few scenarios with a filter.
 
 ## License
 

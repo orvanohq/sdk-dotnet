@@ -6,13 +6,17 @@ const Orvano.Server.OrvanoErrorCodes.IdempotencyInProgress = "idempotency_in_pro
 const Orvano.Server.OrvanoErrorCodes.IdempotencyKeyReused = "idempotency_key_reused" -> string!
 const Orvano.Server.OrvanoErrorCodes.InsufficientScope = "insufficient_scope" -> string!
 const Orvano.Server.OrvanoErrorCodes.Internal = "internal" -> string!
+const Orvano.Server.OrvanoErrorCodes.InvalidCredentials = "invalid_credentials" -> string!
 const Orvano.Server.OrvanoErrorCodes.InvalidCursor = "invalid_cursor" -> string!
 const Orvano.Server.OrvanoErrorCodes.InvalidRequest = "invalid_request" -> string!
 const Orvano.Server.OrvanoErrorCodes.MethodNotAllowed = "method_not_allowed" -> string!
 const Orvano.Server.OrvanoErrorCodes.NotFound = "not_found" -> string!
 const Orvano.Server.OrvanoErrorCodes.PayloadTooLarge = "payload_too_large" -> string!
+const Orvano.Server.OrvanoErrorCodes.ProjectNotActive = "project_not_active" -> string!
 const Orvano.Server.OrvanoErrorCodes.RateLimited = "rate_limited" -> string!
 const Orvano.Server.OrvanoErrorCodes.SessionExpired = "session_expired" -> string!
+const Orvano.Server.OrvanoErrorCodes.SetupComplete = "setup_complete" -> string!
+const Orvano.Server.OrvanoErrorCodes.SetupTokenInvalid = "setup_token_invalid" -> string!
 const Orvano.Server.OrvanoErrorCodes.Timeout = "timeout" -> string!
 const Orvano.Server.OrvanoErrorCodes.Unauthorized = "unauthorized" -> string!
 const Orvano.Server.OrvanoErrorCodes.Unavailable = "unavailable" -> string!
@@ -34,6 +38,16 @@ const Orvano.Server.OrvanoHeaders.OrvanoRequestId = "Orvano-Request-Id" -> strin
 const Orvano.Server.OrvanoHeaders.RetryAfter = "Retry-After" -> string!
 const Orvano.Server.OrvanoHeaders.Traceparent = "traceparent" -> string!
 const Orvano.Server.OrvanoHeaders.Tracestate = "tracestate" -> string!
+Orvano.Server.CurrentKeyResponse
+Orvano.Server.CurrentKeyResponse.<Clone>$() -> Orvano.Server.CurrentKeyResponse!
+Orvano.Server.CurrentKeyResponse.CurrentKeyResponse() -> void
+Orvano.Server.CurrentKeyResponse.Equals(Orvano.Server.CurrentKeyResponse? other) -> bool
+Orvano.Server.CurrentKeyResponse.ProjectId.get -> System.Guid
+Orvano.Server.CurrentKeyResponse.ProjectId.init -> void
+Orvano.Server.CurrentKeyResponse.Scopes.get -> System.Collections.Generic.IReadOnlyList<string!>!
+Orvano.Server.CurrentKeyResponse.Scopes.init -> void
+Orvano.Server.CurrentKeyResponse.Type.get -> Orvano.Server.KeyType
+Orvano.Server.CurrentKeyResponse.Type.init -> void
 Orvano.Server.HealthResponse
 Orvano.Server.HealthResponse.<Clone>$() -> Orvano.Server.HealthResponse!
 Orvano.Server.HealthResponse.ApiVersions.get -> System.Collections.Generic.IReadOnlyList<string!>!
@@ -44,6 +58,14 @@ Orvano.Server.HealthResponse.Status.get -> string!
 Orvano.Server.HealthResponse.Status.init -> void
 Orvano.Server.HealthService
 Orvano.Server.HealthService.GetAsync(Orvano.Server.OrvanoRequestOptions? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Orvano.Server.HealthResponse!>!
+Orvano.Server.KeysService
+Orvano.Server.KeysService.CurrentAsync(Orvano.Server.OrvanoRequestOptions? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Orvano.Server.CurrentKeyResponse!>!
+Orvano.Server.KeyType
+Orvano.Server.KeyType.Equals(Orvano.Server.KeyType other) -> bool
+Orvano.Server.KeyType.IsKnown.get -> bool
+Orvano.Server.KeyType.KeyType() -> void
+Orvano.Server.KeyType.KeyType(string! value) -> void
+Orvano.Server.KeyType.Value.get -> string!
 Orvano.Server.Optional<T>
 Orvano.Server.Optional<T>.Equals(Orvano.Server.Optional<T> other) -> bool
 Orvano.Server.Optional<T>.HasValue.get -> bool
@@ -158,6 +180,7 @@ Orvano.Server.OrvanoRetryOptions.OrvanoRetryOptions() -> void
 Orvano.Server.OrvanoServiceCollectionExtensions
 Orvano.Server.OrvanoServices
 Orvano.Server.OrvanoServices.Health.get -> Orvano.Server.HealthService!
+Orvano.Server.OrvanoServices.Keys.get -> Orvano.Server.KeysService!
 Orvano.Server.ResultPage<T>
 Orvano.Server.ResultPage<T>.<Clone>$() -> Orvano.Server.ResultPage<T>!
 Orvano.Server.ResultPage<T>.Equals(Orvano.Server.ResultPage<T>? other) -> bool
@@ -168,9 +191,14 @@ Orvano.Server.ResultPage<T>.NextCursor.init -> void
 Orvano.Server.ResultPage<T>.ResultPage() -> void
 Orvano.Server.ResultPage<T>.Total.get -> int?
 Orvano.Server.ResultPage<T>.Total.init -> void
+override Orvano.Server.CurrentKeyResponse.Equals(object? obj) -> bool
+override Orvano.Server.CurrentKeyResponse.GetHashCode() -> int
+override Orvano.Server.CurrentKeyResponse.ToString() -> string!
 override Orvano.Server.HealthResponse.Equals(object? obj) -> bool
 override Orvano.Server.HealthResponse.GetHashCode() -> int
 override Orvano.Server.HealthResponse.ToString() -> string!
+override Orvano.Server.KeyType.GetHashCode() -> int
+override Orvano.Server.KeyType.ToString() -> string!
 override Orvano.Server.Optional<T>.Equals(object? obj) -> bool
 override Orvano.Server.Optional<T>.GetHashCode() -> int
 override Orvano.Server.Optional<T>.ToString() -> string!
@@ -185,8 +213,14 @@ override Orvano.Server.OrvanoProblem.ToString() -> string!
 override Orvano.Server.ResultPage<T>.Equals(object? obj) -> bool
 override Orvano.Server.ResultPage<T>.GetHashCode() -> int
 override Orvano.Server.ResultPage<T>.ToString() -> string!
+static Orvano.Server.CurrentKeyResponse.operator !=(Orvano.Server.CurrentKeyResponse? left, Orvano.Server.CurrentKeyResponse? right) -> bool
+static Orvano.Server.CurrentKeyResponse.operator ==(Orvano.Server.CurrentKeyResponse? left, Orvano.Server.CurrentKeyResponse? right) -> bool
 static Orvano.Server.HealthResponse.operator !=(Orvano.Server.HealthResponse? left, Orvano.Server.HealthResponse? right) -> bool
 static Orvano.Server.HealthResponse.operator ==(Orvano.Server.HealthResponse? left, Orvano.Server.HealthResponse? right) -> bool
+static Orvano.Server.KeyType.operator !=(Orvano.Server.KeyType left, Orvano.Server.KeyType right) -> bool
+static Orvano.Server.KeyType.operator ==(Orvano.Server.KeyType left, Orvano.Server.KeyType right) -> bool
+static Orvano.Server.KeyType.Publishable.get -> Orvano.Server.KeyType
+static Orvano.Server.KeyType.Secret.get -> Orvano.Server.KeyType
 static Orvano.Server.Optional<T>.implicit operator Orvano.Server.Optional<T>(T value) -> Orvano.Server.Optional<T>
 static Orvano.Server.Optional<T>.operator !=(Orvano.Server.Optional<T> left, Orvano.Server.Optional<T> right) -> bool
 static Orvano.Server.Optional<T>.operator ==(Orvano.Server.Optional<T> left, Orvano.Server.Optional<T> right) -> bool
@@ -197,3 +231,4 @@ static Orvano.Server.OrvanoProblem.operator ==(Orvano.Server.OrvanoProblem? left
 static Orvano.Server.OrvanoServiceCollectionExtensions.AddOrvano(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<Orvano.Server.OrvanoClientOptions!>! configure) -> Microsoft.Extensions.DependencyInjection.IHttpClientBuilder!
 static Orvano.Server.ResultPage<T>.operator !=(Orvano.Server.ResultPage<T>? left, Orvano.Server.ResultPage<T>? right) -> bool
 static Orvano.Server.ResultPage<T>.operator ==(Orvano.Server.ResultPage<T>? left, Orvano.Server.ResultPage<T>? right) -> bool
+~override Orvano.Server.KeyType.Equals(object obj) -> bool
