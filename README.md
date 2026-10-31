@@ -77,7 +77,7 @@ Each attempt has 30 seconds (`OrvanoClientOptions.Timeout`, or per call with `Or
   dotnet run --project tests/Orvano.Server.ConformanceTests
   ```
 
-  `dotnet test` leaves this project out, since it needs the servers. Set `ORVANO_CONFORMANCE_URL` and `ORVANO_CONFORMANCE_STUB_URL` for other ports, and `ORVANO_CONFORMANCE_PARTIAL=1` when you run a few scenarios with a filter.
+  A scenario that requires a project gets one from `orvano admin bootstrap-project`, run through `docker compose exec` in that stack (spec 0017 SDK-4). `dotnet test` leaves this project out, since it needs the servers. Set `ORVANO_CONFORMANCE_URL` and `ORVANO_CONFORMANCE_STUB_URL` for other ports, and `ORVANO_CONFORMANCE_PARTIAL=1` when you run a few scenarios with a filter.
 
 ## License
 
