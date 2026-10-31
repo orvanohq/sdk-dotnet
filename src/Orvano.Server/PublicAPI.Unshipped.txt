@@ -1,5 +1,6 @@
 #nullable enable
 const Orvano.Server.OrvanoContract.ApiVersion = "2026-10-22" -> string!
+const Orvano.Server.OrvanoErrorCodes.ApiKeyNotActive = "api_key_not_active" -> string!
 const Orvano.Server.OrvanoErrorCodes.Conflict = "conflict" -> string!
 const Orvano.Server.OrvanoErrorCodes.Forbidden = "forbidden" -> string!
 const Orvano.Server.OrvanoErrorCodes.IdempotencyInProgress = "idempotency_in_progress" -> string!
@@ -14,6 +15,7 @@ const Orvano.Server.OrvanoErrorCodes.NotFound = "not_found" -> string!
 const Orvano.Server.OrvanoErrorCodes.PayloadTooLarge = "payload_too_large" -> string!
 const Orvano.Server.OrvanoErrorCodes.ProjectNotActive = "project_not_active" -> string!
 const Orvano.Server.OrvanoErrorCodes.RateLimited = "rate_limited" -> string!
+const Orvano.Server.OrvanoErrorCodes.ReauthRequired = "reauth_required" -> string!
 const Orvano.Server.OrvanoErrorCodes.SessionExpired = "session_expired" -> string!
 const Orvano.Server.OrvanoErrorCodes.SetupComplete = "setup_complete" -> string!
 const Orvano.Server.OrvanoErrorCodes.SetupTokenInvalid = "setup_token_invalid" -> string!
