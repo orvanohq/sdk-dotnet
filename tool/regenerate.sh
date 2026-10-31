@@ -1,6 +1,7 @@
 #!/bin/sh
 # Spec 0014 RGN-1 to RGN-3: regenerates this repo's generated code from the orvano commit in orvano-contract.json.
-#   tool/regenerate.sh                fetch the pinned commit into .orvano/, check the contract hash, run the generator
+#   tool/regenerate.sh                fetch the pinned commit into .orvano/, check the contract hash, run the generator,
+#                                     and bring PublicAPI.Unshipped.txt up to date
 #   tool/regenerate.sh --pin <sha>    move the pin to that commit first (writes orvano-contract.json)
 #   tool/regenerate.sh --fetch-only   fetch and check, no generator
 # CI runs it and then `git diff --exit-code` (the drift check). It needs git, Node 24, pnpm (through corepack), and
@@ -94,4 +95,6 @@ node "$checkout/api/generator/src/cli.ts" --target "$target" --contract "$checko
 # GNR-9: the repo's formatter after the generator. The generator's output is already clean, so this changes nothing.
 dotnet format whitespace "$root/Orvano.Server.slnx" --include-generated \
   --include src/Orvano.Server/Generated tests/Orvano.Server.ConformanceTests/Generated
+# Spec 0002 LIB-10: the generated public API goes into PublicAPI.Unshipped.txt, or CI's build fails on RS0016 and RS0017.
+node "$root/tool/sync-public-api.mjs"
 echo "regenerate: Generated/ matches orvano $(printf '%s' "$commit" | cut -c1-7) (contract $api_version)."
