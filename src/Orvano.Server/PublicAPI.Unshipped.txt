@@ -16,6 +16,7 @@ const Orvano.Server.OrvanoErrorCodes.PayloadTooLarge = "payload_too_large" -> st
 const Orvano.Server.OrvanoErrorCodes.ProjectNotActive = "project_not_active" -> string!
 const Orvano.Server.OrvanoErrorCodes.RateLimited = "rate_limited" -> string!
 const Orvano.Server.OrvanoErrorCodes.ReauthRequired = "reauth_required" -> string!
+const Orvano.Server.OrvanoErrorCodes.ResetTokenInvalid = "reset_token_invalid" -> string!
 const Orvano.Server.OrvanoErrorCodes.SessionExpired = "session_expired" -> string!
 const Orvano.Server.OrvanoErrorCodes.SetupComplete = "setup_complete" -> string!
 const Orvano.Server.OrvanoErrorCodes.SetupTokenInvalid = "setup_token_invalid" -> string!
